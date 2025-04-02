@@ -17,6 +17,22 @@ void add(void *param)
     printf("I add two values %d and %d result = %d\n",temp->a, temp->b, temp->a + temp->b);
 }
 
+void sub(void *param)
+{
+    struct data *temp;
+    temp = (struct data*)param;
+
+    printf("I subtract two values %d and %d result = %d\n",temp->a, temp->b, temp->a - temp->b);
+}
+
+void mul(void *param)
+{
+    struct data *temp;
+    temp = (struct data*)param;
+
+    printf("I multiply two values %d and %d result = %d\n",temp->a, temp->b, temp->a * temp->b);
+}
+
 int main(int argc, char* argv[])
 {
     // initialize the thread pool
@@ -42,6 +58,8 @@ int main(int argc, char* argv[])
         jobs->a = counter1;
         jobs->b = counter2;
         pool_submit(&add,jobs);
+        pool_submit(&sub,jobs);
+        pool_submit(&mul,jobs);
         counter1++;
         counter2++;
     }
