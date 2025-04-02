@@ -4,7 +4,7 @@
 #include <semaphore.h>
 #include "threadpool.h"
 
-#define QUEUE_SIZE 10
+#define QUEUE_SIZE 1000
 #define NUMBER_OF_THREADS 3
 
 #define TRUE 1
@@ -29,6 +29,7 @@ sem_t empty;
 sem_t full;
 int in=0;
 int out=0;
+int kill = 0;
 
 // insert a task into the queue
 // returns 0 if successful or 1 otherwise,
@@ -51,6 +52,10 @@ int enqueue(task t)
 task dequeue()
 {
     sem_wait(&empty);
+    if(kill == 1)
+    {
+        return;
+    }
     pthread_mutex_lock(&mutex); //waits on empty, to ensure that there is something to take, then gets mutex lock
 
     task *returnTask;
@@ -71,7 +76,10 @@ void *worker(void *param)
     while(TRUE)             // keeps looping as it waits for more jobs to pop up
     {
         task returnTask = dequeue();
-
+        if(kill == 1)
+        {
+            break;
+        }
             // execute the task
         execute(returnTask.function, returnTask.data);
     }
@@ -108,7 +116,7 @@ void pool_init(void)
     sem_init(&empty,0,0);
     sem_init(&full,0,QUEUE_SIZE);               // initialize our semaphores/mutex
 
-    for(int i = 0; i < NUMBER_OF_THREADS; i++)  // create the threads and let them run free
+    for(int i = 0; i < NUMBER_OF_THREADS; i++)  // create the threads and lets them run free
     {
         pthread_create(&bee[i],NULL,worker,NULL);
     }
@@ -117,9 +125,12 @@ void pool_init(void)
 // shutdown the thread pool
 void pool_shutdown(void)
 {
+    kill = 1;
+
     for(int i = 0; i < NUMBER_OF_THREADS; i++)
     {
-            pthread_cancel(bee[i]);                 // tells all threads to wrap it up and come back for supper
+        sem_post(&empty);
+        pthread_cancel(bee[i]);                 // tells all threads to wrap it up and come back for supper
     }
 
     for(int i = 0; i < NUMBER_OF_THREADS; i++)      // joins those threads
@@ -130,4 +141,5 @@ void pool_shutdown(void)
     pthread_mutex_destroy(&mutex);                  // destroys semaphores/mutex
     sem_destroy(&empty);
     sem_destroy(&full);
+    printf("Pool successfully shut down.\n");
 }
