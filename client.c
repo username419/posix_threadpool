@@ -1,4 +1,4 @@
-#include <stdio.h>
+\#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include "threadpool.h"
@@ -48,10 +48,7 @@ int main(int argc, char* argv[])
 
     // inelegant way to handle returning the threads created later.
     // simply times out, then moves on to pool_shutdown() which cancels them.
-    if(argc != 3)
-    {
-        sleep(30);
-    }
+    sleep(1);
 
     pool_shutdown();
 
