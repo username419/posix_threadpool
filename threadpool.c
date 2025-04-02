@@ -4,7 +4,7 @@
 #include <semaphore.h>
 #include "threadpool.h"
 
-#define QUEUE_SIZE 1000
+#define QUEUE_SIZE 10
 #define NUMBER_OF_THREADS 3
 
 #define TRUE 1
