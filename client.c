@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     int counter2 = 10;
     for(int i = 0; i < jobs; i++)
     {
-        printf("Job %d",i);
+        printf("Job %d: ",i);
         struct data *jobs = (struct data *)malloc(sizeof(struct data));
         jobs->a = counter1;
         jobs->b = counter2;
@@ -48,7 +48,10 @@ int main(int argc, char* argv[])
 
     // inelegant way to handle returning the threads created later.
     // simply times out, then moves on to pool_shutdown() which cancels them.
-    sleep(30);
+    if(argc != 3)
+    {
+        sleep(30);
+    }
 
     pool_shutdown();
 
