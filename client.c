@@ -23,16 +23,21 @@ int main(int argc, char* argv[])
     pool_init();
 
     // reads from command line the number of jobs to create
-    int jobs = 0;
-    char *a = argv[1];
-    jobs = atoi(a);
-    printf("Total jobs counted: %d\n", jobs);
+    int jobs = 11;
+
+    if(argc > 1)
+    {
+        char *a = argv[1];
+        jobs = atoi(a);
+        printf("Total jobs counted: %d\n", jobs);
+    }
 
     // creates those jobs, increments these two counters to simulate actually accomplishing something
     int counter1 = 5;
     int counter2 = 10;
     for(int i = 0; i < jobs; i++)
     {
+        printf("Job %d",i);
         struct data *jobs = (struct data *)malloc(sizeof(struct data));
         jobs->a = counter1;
         jobs->b = counter2;
