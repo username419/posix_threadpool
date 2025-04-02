@@ -27,9 +27,8 @@ pthread_mutex_t mutex;
 // semaphore to signal that the queue is no longer empty
 sem_t empty;
 sem_t full;
-int in=0;
-int out=0;
-int kill = 0;
+int in = 0;
+int out = 0;
 
 // insert a task into the queue
 // returns 0 if successful or 1 otherwise,
@@ -52,10 +51,6 @@ int enqueue(task t)
 task dequeue()
 {
     sem_wait(&empty);
-    if(kill == 1)
-    {
-        return;
-    }
     pthread_mutex_lock(&mutex); //waits on empty, to ensure that there is something to take, then gets mutex lock
 
     task *returnTask;
@@ -76,11 +71,6 @@ void *worker(void *param)
     while(TRUE)             // keeps looping as it waits for more jobs to pop up
     {
         task returnTask = dequeue();
-        if(kill == 1)
-        {
-            break;
-        }
-            // execute the task
         execute(returnTask.function, returnTask.data);
     }
 
@@ -125,11 +115,8 @@ void pool_init(void)
 // shutdown the thread pool
 void pool_shutdown(void)
 {
-    kill = 1;
-
     for(int i = 0; i < NUMBER_OF_THREADS; i++)
     {
-        sem_post(&empty);
         pthread_cancel(bee[i]);                 // tells all threads to wrap it up and come back for supper
     }
 
